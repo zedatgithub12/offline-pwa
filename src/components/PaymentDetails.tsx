@@ -57,7 +57,7 @@ const PaymentDetails = ({ details }: PaymentDetailsCardProps) => {
 
       return `${months[month - 1]} ${day}, ${year}`;
     } catch (error) {
-      return "Invalid date format";
+      return "Invalid date format" + error;
     }
   };
 

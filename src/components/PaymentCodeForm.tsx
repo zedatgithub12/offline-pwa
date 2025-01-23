@@ -3,7 +3,7 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import PaymentDetails from "./PaymentDetails";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Fallback from "./Fallback";
 
 const validationSchema = Yup.object().shape({
@@ -26,15 +26,17 @@ const PaymentCodeForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<PaymentDetailProps | null>(null);
   const [paymentDetail, setPaymentDetail] = useState(null);
+  const [apiKey, setApiKey] = useState(null);
+  const [fabricToken, setFabricToken] = useState(null);
   const [error, setError] = useState(false);
 
+  const header = {
+    accept: "application/json",
+    "Content-Type": "application/json",
+  };
   const handleGettingReservation = (values: { code: string }) => {
     setLoading(true);
-    const API_URL = `https://staging.eaglelionsystems.com/hajji/v1/query/${values?.code}`;
-    const header = {
-      accept: "application/json",
-      "Content-Type": "application/json",
-    };
+    const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}query/${values?.code}`;
 
     fetch(API_URL, {
       method: "GET",
@@ -46,6 +48,8 @@ const PaymentCodeForm: React.FC = () => {
           setError(false);
           setData(response?.pilgrim);
           setPaymentDetail(response?.payload);
+          setFabricToken(response?.fabricToken);
+          setApiKey(response?.apiKey);
         } else {
           setError(true);
           setData(null);
@@ -68,13 +72,59 @@ const PaymentCodeForm: React.FC = () => {
     setPaymentDetail(null);
     setError(false);
   };
+
+
   //  ------------- SUPER APP WILL PROCESS THE FOLLOWING FUNCTION --------------
 
-  const handlePaymentProcessing = () => {
-    console.log("Initiating super app payment");
-    console.log(paymentDetail);
-    //mike you can take it from here
+  useEffect(() => {
+    (window as any).handleinitDataCallback = handleCallBackPaymentConfirm;
+  }, []);
+
+
+  const paymentConfirmation = async (response: any) => {
+
+    const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}pay`;
+
+    fetch(API_URL, {
+      method: "POST",
+      headers: header,
+      body: JSON.stringify(response),
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        console.log("Response -->", response)
+        handleClearDetails()
+      })
+      .catch((error) => {
+        console.log("Catch Error -->", error)
+      })
   };
+
+  const handleCallBackPaymentConfirm = (data: any) => {
+    paymentConfirmation(data);
+  }
+
+
+  const handlePaymentProcessing = () => {
+    // console.log("Initiating super app payment");
+    // console.log(paymentDetail);
+
+    let sa_request_payload = JSON.stringify({
+      functionName: "initiatePayment",
+      params: {
+        orderPayload: paymentDetail,
+        authPayload: {
+          xAPiKey: apiKey,
+          xAccessToken: fabricToken,
+        },
+        callbackName: "handleinitDataCallback",
+      },
+    });
+    (window as any).dashenbanksuperapp?.send(sa_request_payload);
+
+  };
+
+
 
   return (
     <div className="flex items-center justify-center ">

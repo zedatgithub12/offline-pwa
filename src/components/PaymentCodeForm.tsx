@@ -4,45 +4,58 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import PaymentDetails from "./PaymentDetails";
 import { useState } from "react";
+import Fallback from "./Fallback";
 
 const validationSchema = Yup.object().shape({
   code: Yup.string().required("Hajj payment code is required"),
 });
 
+interface PaymentDetailProps {
+  amount: number;
+  photo_url: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  phone: string;
+  passport_number: string;
+  birth_date: string;
+  service_package: string;
+}
+
 const PaymentCodeForm: React.FC = () => {
-  const paymentDetails = {
-    amount: "329,000.00",
-    firstName: "Muhammad",
-    fathersName: "Aamir",
-    grandFathersName: "Abdullah",
-    passportNumber: "EP-3473533",
-    dateOfBirth: "May 12, 1980",
-  };
-
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<PaymentDetailProps | null>(null);
+  const [paymentDetail, setPaymentDetail] = useState(null);
+  const [error, setError] = useState(false);
 
-  const handleGettingReservation = (code: { code: string }) => {
+  const handleGettingReservation = (values: { code: string }) => {
     setLoading(true);
-    const url = "";
+    const API_URL = `https://staging.eaglelionsystems.com/hajji/v1/query/${values?.code}`;
     const header = {
       accept: "application/json",
       "Content-Type": "application/json",
     };
 
-    fetch(url, {
-      method: "POST",
+    fetch(API_URL, {
+      method: "GET",
       headers: header,
-      body: JSON.stringify({ code }),
     })
       .then((response) => response.json())
       .then((response) => {
         if (response.success) {
-          setData(response.data);
+          setError(false);
+          setData(response?.pilgrim);
+          setPaymentDetail(response?.payload);
+        } else {
+          setError(true);
+          setData(null);
+          setPaymentDetail(null);
         }
       })
-      .catch((error) => {
-        alert(error.message); // mike you can replace this toast with super app toast
+      .catch(() => {
+        setError(true);
+        setData(null);
+        setPaymentDetail(null);
       })
       .finally(() => {
         setLoading(false);
@@ -52,6 +65,8 @@ const PaymentCodeForm: React.FC = () => {
   //  ------------- SUPER APP WILL PROCESS THE FOLLOWING FUNCTION --------------
 
   const handlePaymentProcessing = () => {
+    console.log("Initiating super app payment");
+    console.log(paymentDetail);
     //mike you can take it from here
   };
 
@@ -60,7 +75,7 @@ const PaymentCodeForm: React.FC = () => {
       <div className=" xs:w-full  md:w-1/2 lg:w-1/3 min-h-screen bg-white p-4 relative">
         <p className="text-2xl font-bold  text-black">Enter Payment Code</p>
         <p className="text-md font-medium mt-1 mb-4 text-gray-500">
-          Please enter your Hajj payment code and proceed the Payment.
+          Please enter your hajj payment code and proceed the payment.
         </p>
 
         <Formik
@@ -94,9 +109,13 @@ const PaymentCodeForm: React.FC = () => {
                   className="text-red-500 mt-6 text-md"
                 />
               </div>
-              {data && <PaymentDetails details={paymentDetails} />}
-
               {data ? (
+                <PaymentDetails details={data} />
+              ) : error ? (
+                <Fallback />
+              ) : null}
+
+              {data && !error ? (
                 <button
                   type="button"
                   className="absolute bottom-6 left-3 w-[94%] bg-gradient-to-r from-[#14670F] to-[#44BC27] text-white font-[600] py-3 px-4 rounded-[40px]"

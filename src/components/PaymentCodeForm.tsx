@@ -109,7 +109,7 @@ const PaymentCodeForm: React.FC = () => {
     // console.log("Initiating super app payment");
     // console.log(paymentDetail);
 
-    let sa_request_payload = JSON.stringify({
+    const sa_request_payload = JSON.stringify({
       functionName: "initiatePayment",
       params: {
         orderPayload: paymentDetail,

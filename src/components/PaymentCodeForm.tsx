@@ -7,7 +7,7 @@ import { useState } from "react";
 import Fallback from "./Fallback";
 
 const validationSchema = Yup.object().shape({
-  code: Yup.string().required("Hajj payment code is required"),
+  code: Yup.string().min(1, "Hajj payment code is required"),
 });
 
 interface PaymentDetailProps {
@@ -62,6 +62,12 @@ const PaymentCodeForm: React.FC = () => {
       });
   };
 
+  //  ------------- HANDLE CLEARING FETCHED DETAILS ---------------------------
+  const handleClearDetails = () => {
+    setData(null);
+    setPaymentDetail(null);
+    setError(false);
+  };
   //  ------------- SUPER APP WILL PROCESS THE FOLLOWING FUNCTION --------------
 
   const handlePaymentProcessing = () => {
@@ -87,7 +93,7 @@ const PaymentCodeForm: React.FC = () => {
             handleGettingReservation(values);
           }}
         >
-          {() => (
+          {({ values, setFieldValue }) => (
             <Form className=" flex flex-col py-3 justify-between ">
               <div className="mb-5">
                 <label
@@ -96,13 +102,28 @@ const PaymentCodeForm: React.FC = () => {
                 >
                   Hajj Payment Code
                 </label>
-                <Field
-                  type="text"
-                  id="code"
-                  name="code"
-                  placeholder="Enter Hajj Payment Code"
-                  className="bg-[#F7F7F7] mt-1 p-4 w-full border-0 rounded-xl  focus:border-[#44BC27]"
-                />
+                <div className="relative">
+                  <Field
+                    type="text"
+                    id="code"
+                    name="code"
+                    placeholder="Enter Hajj Payment Code"
+                    className="bg-[#F7F7F7] mt-1 p-4 w-full border-0 rounded-xl focus:border-[#44BC27] pr-12" // Add padding to the right for the button
+                  />
+                  {values.code && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFieldValue("code", "");
+                        handleClearDetails();
+                      }}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+                    >
+                      &#x2715;
+                    </button>
+                  )}
+                </div>
+
                 <ErrorMessage
                   name="code"
                   component="span"

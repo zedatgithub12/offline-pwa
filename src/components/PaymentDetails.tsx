@@ -80,10 +80,11 @@ const PaymentDetails = ({ details }: PaymentDetailsCardProps) => {
             <Image
               src={photo_url}
               alt="traveler photo"
-              width={32}
-              height={32}
+              width={144}
+              height={144}
               onError={() => setCorrectPhotoUrl(false)}
               className="w-36 h-36 mt-4 object-contain mb-1 rounded-[18px] border-[6px] border-white shadow-[0_2px_12px_rgba(1,1,1,0.06)]"
+              priority
             />
           )}
           <p className="text-black text-[18px] font-bold mb-2">

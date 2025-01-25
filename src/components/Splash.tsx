@@ -8,9 +8,10 @@ const Splash = () => {
         <Image
           src="/logo.svg"
           alt="Hajj travelers"
-          width={50}
-          height={50}
-          className="w-52 h-52 object-contain mb-4"
+          width={208}
+          height={208}
+          className="w-52 h-52 object-scale-down mb-4"
+          priority
         />
       </div>
     </div>

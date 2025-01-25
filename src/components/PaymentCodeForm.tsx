@@ -73,16 +73,13 @@ const PaymentCodeForm: React.FC = () => {
     setError(false);
   };
 
-
   //  ------------- SUPER APP WILL PROCESS THE FOLLOWING FUNCTION --------------
 
   useEffect(() => {
     (window as any).handleinitDataCallback = handleCallBackPaymentConfirm;
   }, []);
 
-
   const paymentConfirmation = async (response: any) => {
-
     const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}pay`;
 
     fetch(API_URL, {
@@ -92,18 +89,17 @@ const PaymentCodeForm: React.FC = () => {
     })
       .then((response) => response.json())
       .then((response) => {
-        console.log("Response -->", response)
-        handleClearDetails()
+        console.log("Response -->", response);
+        handleClearDetails();
       })
       .catch((error) => {
-        console.log("Catch Error -->", error)
-      })
+        console.log("Catch Error -->", error);
+      });
   };
 
   const handleCallBackPaymentConfirm = (data: any) => {
     paymentConfirmation(data);
-  }
-
+  };
 
   const handlePaymentProcessing = () => {
     // console.log("Initiating super app payment");
@@ -121,10 +117,7 @@ const PaymentCodeForm: React.FC = () => {
       },
     });
     (window as any).dashenbanksuperapp?.send(sa_request_payload);
-
   };
-
-
 
   return (
     <div className="flex items-center justify-center ">

@@ -5,10 +5,17 @@ import * as Yup from "yup";
 import PaymentDetails from "./PaymentDetails";
 import { useEffect, useState } from "react";
 import Fallback from "./Fallback";
+import { toast, Toaster } from "sonner"
 
 const validationSchema = Yup.object().shape({
-  code: Yup.string().min(1, "Hajj payment code is required"),
+  code: Yup.string()
+    .matches(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters are allowed")
+    .required("Hajj payment code is required")
+    .min(6, "Min 6 characters for Hajj payment code")
+    .max(10, "Max 10 character for Hajj payment code"),
 });
+
+type validationType = Yup.InferType<typeof validationSchema>
 
 interface PaymentDetailProps {
   amount: number;
@@ -28,7 +35,6 @@ const PaymentCodeForm: React.FC = () => {
   const [paymentDetail, setPaymentDetail] = useState(null);
   const [apiKey, setApiKey] = useState(null);
   const [fabricToken, setFabricToken] = useState(null);
-  const [error, setError] = useState(false);
 
   const header = {
     accept: "application/json",
@@ -45,19 +51,18 @@ const PaymentCodeForm: React.FC = () => {
       .then((response) => response.json())
       .then((response) => {
         if (response.success) {
-          setError(false);
           setData(response?.pilgrim);
           setPaymentDetail(response?.payload);
           setFabricToken(response?.fabricToken);
           setApiKey(response?.apiKey);
         } else {
-          setError(true);
+          toast.error(response?.message)
           setData(null);
           setPaymentDetail(null);
         }
       })
-      .catch(() => {
-        setError(true);
+      .catch((err) => {
+        err?.message && toast.error(err?.message)
         setData(null);
         setPaymentDetail(null);
       })
@@ -70,7 +75,6 @@ const PaymentCodeForm: React.FC = () => {
   const handleClearDetails = () => {
     setData(null);
     setPaymentDetail(null);
-    setError(false);
   };
 
   //  ------------- SUPER APP WILL PROCESS THE FOLLOWING FUNCTION --------------
@@ -132,78 +136,88 @@ const PaymentCodeForm: React.FC = () => {
             code: "",
           }}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
+          onSubmit={(values: validationType) => {
             handleGettingReservation(values);
           }}
         >
-          {({ values, setFieldValue }) => (
-            <Form className=" flex flex-col py-3 justify-between ">
-              <div className="mb-5">
-                <label
-                  htmlFor="code"
-                  className="block text-md font-medium text-black"
-                >
-                  Hajj Payment Code
-                </label>
-                <div className="relative">
-                  <Field
-                    type="text"
-                    id="code"
+          {({ values, setFieldValue, isValid }) => {
+            if (values.code === "") handleClearDetails();
+
+            return (
+              <Form className=" flex flex-col py-3 justify-between ">
+                <div className="mb-5">
+                  <label
+                    htmlFor="code"
+                    className="block text-md font-medium text-black"
+                  >
+                    Hajj Payment Code
+                  </label>
+                  <div className="relative">
+                    <Field
+                      minLength={6}
+                      maxLength={10}
+                      matches="/^[a-zA-Z0-9]+$/"
+
+                      type="text"
+                      id="code"
+                      name="code"
+                      placeholder="Enter Hajj Payment Code"
+                      className="bg-[#F7F7F7] mt-1 p-4 w-full border-0 rounded-xl focus:border-[#44BC27] pr-12" // Add padding to the right for the button
+                    />
+                    {values.code && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFieldValue("code", "");
+                          handleClearDetails();
+                        }}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+                      >
+                        &#x2715;
+                      </button>
+                    )}
+                  </div>
+
+                  <ErrorMessage
                     name="code"
-                    placeholder="Enter Hajj Payment Code"
-                    className="bg-[#F7F7F7] mt-1 p-4 w-full border-0 rounded-xl focus:border-[#44BC27] pr-12" // Add padding to the right for the button
+                    component="span"
+                    className="text-red-500 mt-6 text-md"
                   />
-                  {values.code && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFieldValue("code", "");
-                        handleClearDetails();
-                      }}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
-                    >
-                      &#x2715;
-                    </button>
-                  )}
                 </div>
+                {data ? (
+                  <PaymentDetails details={data} />
+                ) : null}
 
-                <ErrorMessage
-                  name="code"
-                  component="span"
-                  className="text-red-500 mt-6 text-md"
-                />
-              </div>
-              {data ? (
-                <PaymentDetails details={data} />
-              ) : error ? (
-                <Fallback />
-              ) : null}
-
-              {data && !error ? (
-                <button
-                  type="button"
-                  className="absolute bottom-6 left-3 w-[94%] bg-gradient-to-r from-[#14670F] to-[#44BC27] text-white font-[600] py-3 px-4 rounded-[40px]"
-                  onClick={() => handlePaymentProcessing()}
-                >
-                  Pay
-                </button>
-              ) : (
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="absolute bottom-6 left-3 text-center w-[94%] bg-gradient-to-r from-[#14670F] to-[#44BC27] text-white font-[600] py-3 px-4 rounded-[40px]"
-                >
-                  {loading ? (
-                    <div className="loader mx-auto py-3"></div>
-                  ) : (
-                    "Search"
-                  )}
-                </button>
-              )}
-            </Form>
-          )}
+                {data ? (
+                  <button
+                    type="button"
+                    className="absolute bottom-6 left-3 w-[94%] bg-gradient-to-r from-[#14670F] to-[#44BC27] text-white font-[600] py-3 px-4 rounded-[40px]"
+                    onClick={() => handlePaymentProcessing()}
+                  >
+                    Pay
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={loading || !values.code || !isValid}
+                    className={loading || !values.code || !isValid
+                      ? "absolute bottom-6 left-3 text-center w-[94%] bg-gray-400 text-gray-600 font-[600] py-3 px-4 rounded-[40px]"
+                      : "absolute bottom-6 left-3 text-center w-[94%] bg-gradient-to-r from-[#14670F] to-[#44BC27] text-white font-[600] py-3 px-4 rounded-[40px]"}
+                  >
+                    {loading ? (
+                      <div className="loader mx-auto py-3"></div>
+                    ) : (
+                      "Search"
+                    )}
+                  </button>
+                )}
+              </Form>
+            )
+          }}
         </Formik>
       </div>
+      <Toaster richColors position="top-right" closeButton />
+
     </div>
   );
 };

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import InstallPWAButton from "@/components/InstallPWAButton";
-
 <link
   href="https://fonts.googleapis.com/css2?family=lato:wght@400;700&display=swap"
   rel="stylesheet"
@@ -33,7 +31,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <InstallPWAButton />
         {children}
       </body>
     </html>

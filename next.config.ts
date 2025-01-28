@@ -1,54 +1,54 @@
 const withPWA = require("next-pwa")({
   dest: "public",
-  disable: process.env.NODE_ENV === "development", 
+  disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
   runtimeCaching: [
     {
-      urlPattern: /^https?.*/, // Cache all HTTP/HTTPS requests
+      urlPattern: /^https?.*/,
       handler: "NetworkFirst",
       options: {
         cacheName: "http-cache",
         networkTimeoutSeconds: 15,
         expiration: {
           maxEntries: 200,
-          maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+          maxAgeSeconds: 7 * 24 * 60 * 60,
         },
         fallback: {
-          document: '/offline.html',
+          document: "/offline.html",
         },
       },
     },
     {
-      urlPattern: /^\/_next\/.*$/, // Cache Next.js static assets
+      urlPattern: /^\/_next\/.*$/,
       handler: "CacheFirst",
       options: {
         cacheName: "next-static-files",
         expiration: {
           maxEntries: 100,
-          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+          maxAgeSeconds: 30 * 24 * 60 * 60,
         },
       },
     },
     {
-      urlPattern: /^\/static\/.*$/, // Cache custom static assets
+      urlPattern: /^\/static\/.*$/,
       handler: "CacheFirst",
       options: {
         cacheName: "static-resources",
         expiration: {
           maxEntries: 50,
-          maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+          maxAgeSeconds: 7 * 24 * 60 * 60,
         },
       },
     },
     {
-      urlPattern: /^https:\/\/fonts\.(gstatic|googleapis)\.com\/.*/, // Cache Google Fonts
+      urlPattern: /^https:\/\/fonts\.(gstatic|googleapis)\.com\/.*/,
       handler: "CacheFirst",
       options: {
         cacheName: "google-fonts",
         expiration: {
           maxEntries: 20,
-          maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
+          maxAgeSeconds: 365 * 24 * 60 * 60,
         },
       },
     },

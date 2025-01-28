@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }: any) {
           .register("/sw.js")
           .then((registration) => {
             console.log(
-              "Service Worker registered with scope:",
+              "Service Worker registered in scope:",
               registration.scope
             );
           })

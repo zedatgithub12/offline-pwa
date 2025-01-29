@@ -7,7 +7,7 @@ const Splash = () => {
       <div className="w-full md:w-1/2 lg:w-1/3 min-h-screen bg-white relative flex flex-col items-center justify-center">
         <Image
           src="/logo.svg"
-          alt="Hajj travelers"
+          alt="Hajj travelers splash image"
           width={240}
           height={240}
           className="object-contain mb-4"

@@ -5,10 +5,12 @@ async function cacheCoreAssets() {
   const cache = await caches.open(CACHE_NAME);
   return cache.addAll([
     "/",
+    "/offline.html",
     "/logo.svg",
-    "offline.html",
-    "fallback",
-    "/bg-pattern.png",
+    "/logo.png",
+    "/fallback",
+    "/_next/static/css/layout.css",
+    "/_next/static/chunks/",
   ]);
 }
 
@@ -42,7 +44,6 @@ async function dynamicCaching(request) {
     await cache.put(request, responseClone);
     return response;
   } catch (error) {
-    console.error("Dynamic caching failed:", error);
     return caches.match(request);
   }
 }
@@ -61,7 +62,6 @@ async function cacheFirstStrategy(request) {
     await cache.put(request, responseClone);
     return networkResponse;
   } catch (error) {
-    console.error("Cache first strategy failed:", error);
     return caches.match("/offline.html");
   }
 }

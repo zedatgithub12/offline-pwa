@@ -37,7 +37,7 @@ const Fallback: React.FC = () => {
   };
 
   return (
-    <div className="flex mx-auto max-w-[500px] w-full flex-col items-center justify-center h-screen bg-foreground text-black p-6 mt-12 text-white">
+    <div className=" xs:w-full  md:w-1/2 lg:w-1/3 min-h-screen bg-white p-4 relative text-center">
       <Image
         src="/logo.svg"
         alt="Hajj travelers fallback logo"

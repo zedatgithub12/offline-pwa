@@ -64,7 +64,8 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (event.request.mode === "navigate") {
     event.respondWith(cacheFirstStrategy(request));
-  } else {
-    event.respondWith(dynamicCaching(request));
   }
+//    else {
+//     event.respondWith(dynamicCaching(request));
+//   }
 });

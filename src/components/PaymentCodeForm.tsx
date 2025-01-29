@@ -67,7 +67,7 @@ const PaymentCodeForm: React.FC = () => {
         }
       })
       .catch((err) => {
-        err?.message && toast.error(err?.message);
+        toast.error(err?.message);
         handleClearDetails();
       })
       .finally(() => {
@@ -79,6 +79,7 @@ const PaymentCodeForm: React.FC = () => {
 
   useEffect(() => {
     (window as any).handleinitDataCallback = handleCallBackPaymentConfirm;
+    // eslint-disable-exhustive-deps
   }, []);
 
   const paymentConfirmation = async (response: any) => {

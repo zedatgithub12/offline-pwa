@@ -155,7 +155,6 @@ const PaymentCodeForm: React.FC = () => {
                     <Field
                       minLength={6}
                       maxLength={10}
-                      matches="/^[a-zA-Z0-9]+$/"
                       type="text"
                       id="code"
                       name="code"

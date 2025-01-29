@@ -4,8 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import PaymentDetails from "./PaymentDetails";
 import { useEffect, useState } from "react";
-import Fallback from "./Fallback";
-import { toast, Toaster } from "sonner"
+import { toast, Toaster } from "sonner";
 
 const validationSchema = Yup.object().shape({
   code: Yup.string()
@@ -15,7 +14,7 @@ const validationSchema = Yup.object().shape({
     .max(10, "Max 10 character for Hajj payment code"),
 });
 
-type validationType = Yup.InferType<typeof validationSchema>
+type validationType = Yup.InferType<typeof validationSchema>;
 
 interface PaymentDetailProps {
   amount: number;
@@ -40,6 +39,13 @@ const PaymentCodeForm: React.FC = () => {
     accept: "application/json",
     "Content-Type": "application/json",
   };
+
+  //  ------------- HANDLE CLEARING FETCHED DETAILS ---------------------------
+  const handleClearDetails = () => {
+    setData(null);
+    setPaymentDetail(null);
+  };
+
   const handleGettingReservation = (values: { code: string }) => {
     setLoading(true);
     const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}query/${values?.code}`;
@@ -56,25 +62,17 @@ const PaymentCodeForm: React.FC = () => {
           setFabricToken(response?.fabricToken);
           setApiKey(response?.apiKey);
         } else {
-          toast.error(response?.message)
-          setData(null);
-          setPaymentDetail(null);
+          toast.error(response?.message);
+          handleClearDetails();
         }
       })
       .catch((err) => {
-        err?.message && toast.error(err?.message)
-        setData(null);
-        setPaymentDetail(null);
+        err?.message && toast.error(err?.message);
+        handleClearDetails();
       })
       .finally(() => {
         setLoading(false);
       });
-  };
-
-  //  ------------- HANDLE CLEARING FETCHED DETAILS ---------------------------
-  const handleClearDetails = () => {
-    setData(null);
-    setPaymentDetail(null);
   };
 
   //  ------------- SUPER APP WILL PROCESS THE FOLLOWING FUNCTION --------------
@@ -157,7 +155,6 @@ const PaymentCodeForm: React.FC = () => {
                       minLength={6}
                       maxLength={10}
                       matches="/^[a-zA-Z0-9]+$/"
-
                       type="text"
                       id="code"
                       name="code"
@@ -184,9 +181,7 @@ const PaymentCodeForm: React.FC = () => {
                     className="text-red-500 mt-6 text-md"
                   />
                 </div>
-                {data ? (
-                  <PaymentDetails details={data} />
-                ) : null}
+                {data ? <PaymentDetails details={data} /> : null}
 
                 {data ? (
                   <button
@@ -200,9 +195,11 @@ const PaymentCodeForm: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading || !values.code || !isValid}
-                    className={loading || !values.code || !isValid
-                      ? "absolute bottom-6 left-3 text-center w-[94%] bg-gray-400 text-gray-600 font-[600] py-3 px-4 rounded-[40px]"
-                      : "absolute bottom-6 left-3 text-center w-[94%] bg-gradient-to-r from-[#14670F] to-[#44BC27] text-white font-[600] py-3 px-4 rounded-[40px]"}
+                    className={
+                      loading || !values.code || !isValid
+                        ? "absolute bottom-6 left-3 text-center w-[94%] bg-gray-400 text-gray-600 font-[600] py-3 px-4 rounded-[40px]"
+                        : "absolute bottom-6 left-3 text-center w-[94%] bg-gradient-to-r from-[#14670F] to-[#44BC27] text-white font-[600] py-3 px-4 rounded-[40px]"
+                    }
                   >
                     {loading ? (
                       <div className="loader mx-auto py-3"></div>
@@ -212,12 +209,11 @@ const PaymentCodeForm: React.FC = () => {
                   </button>
                 )}
               </Form>
-            )
+            );
           }}
         </Formik>
       </div>
       <Toaster richColors position="top-right" closeButton />
-
     </div>
   );
 };

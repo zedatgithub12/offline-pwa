@@ -79,7 +79,7 @@ const PaymentCodeForm: React.FC = () => {
 
   useEffect(() => {
     (window as any).handleinitDataCallback = handleCallBackPaymentConfirm;
-    // eslint-disable-exhustive-deps
+    // eslint-disable-next-line
   }, []);
 
   const paymentConfirmation = async (response: any) => {

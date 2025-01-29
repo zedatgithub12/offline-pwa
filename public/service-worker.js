@@ -3,7 +3,13 @@ const CACHE_NAME = "hajji-offline";
 //caching the static asset while installing the service worker in the browser
 async function cacheCoreAssets() {
   const cache = await caches.open(CACHE_NAME);
-  return cache.addAll(["/", "/logo.svg", "/offline.html", "/bg-pattern.png"]);
+  return cache.addAll([
+    "/",
+    "/logo.svg",
+    "offline.html",
+    "fallback",
+    "/bg-pattern.png",
+  ]);
 }
 
 self.addEventListener("install", (event) => {
@@ -65,7 +71,7 @@ self.addEventListener("fetch", (event) => {
   if (event.request.mode === "navigate") {
     event.respondWith(cacheFirstStrategy(request));
   }
-//    else {
-//     event.respondWith(dynamicCaching(request));
-//   }
+  //    else {
+  //     event.respondWith(dynamicCaching(request));
+  //   }
 });

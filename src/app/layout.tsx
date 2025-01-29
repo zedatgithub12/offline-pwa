@@ -19,6 +19,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Hajj Travelers",
   description: "Hajji travelers ticket purchasing mini app",
+  manifest:'/web.manifest'
 };
 
 export default function RootLayout({

@@ -9,8 +9,8 @@ async function cacheCoreAssets() {
     "/logo.svg",
     "/logo.png",
     "/fallback",
-    "/_next/static/css/layout.css",
-    "/_next/static/chunks/",
+    "/_next/static/css/app/layout.css",
+    "/_next/static/chunks/main-app.js",
   ]);
 }
 
@@ -68,7 +68,7 @@ async function cacheFirstStrategy(request) {
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-  if (event.request.mode === "navigate") {
+  if (event.request.mode !== "navigate") {
     event.respondWith(cacheFirstStrategy(request));
   }
   //    else {

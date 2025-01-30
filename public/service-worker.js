@@ -71,10 +71,6 @@ async function cacheFirstStrategy(request) {
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-
-  if (request.mode === "navigate") {
     event.respondWith(cacheFirstStrategy(request));
-  } else {
-    event.respondWith(dynamicCaching(request));
-  }
+  
 });
